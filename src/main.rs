@@ -10,7 +10,15 @@ fn main() {
     todo.insert(item);
     match todo.save() {
       Ok(_) => println!("Todo Saved!"),
-      Err(why) => print!("An Error Occured: {}", why),
+      Err(why) => println!("An Error Occured: {}", why),
+    }
+  } else if action == "complete" {
+    match todo.complete(&item) {
+      None => println!("'{}' is not defined", item),
+      Some(_) => match todo.save() {
+        Ok(_) => println!("Todo Saved!"),
+        Err(why) => println!("An Error Occured: {}", why),
+      }
     }
   }
 }
@@ -51,5 +59,12 @@ impl Todo {
       content.push_str(&record)
     }
     std::fs::write("db.txt", content)
+  }
+
+  fn complete(&mut self, key: &String) -> Option<()> {
+    match self.map.get_mut(key) {
+      Some(v) => Some(*v = false),
+      None => None,
+    }
   }
 }
